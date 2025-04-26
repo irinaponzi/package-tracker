@@ -2,7 +2,7 @@ package _package
 
 // PackageDto is a Data Transfer Object for the Package entity
 type PackageDto struct {
-	TrackingCode string        `json:"tracking_code"`
+	TrackingCode string        `json:"tracking"`
 	Status       PackageStatus `json:"status"`
 	Size         PackageSize   `json:"size"`
 	WeightKg     float64       `json:"weight_kg"`

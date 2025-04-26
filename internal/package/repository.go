@@ -24,7 +24,7 @@ func NewPackageRepository(db *sql.DB) *PackageRepository {
 // FindAll retrieves all packages from the database
 func (r *PackageRepository) FindAll() ([]Package, error) {
 	query := `
-		SELECT tracking_code, status, size, weight_kg, destination
+		SELECT tracking, status, size, weight_kg, destination
     	FROM packages
 	`
 	rows, err := r.db.Query(query)
