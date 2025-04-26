@@ -14,17 +14,20 @@
 To get started with the project:
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/package-tracker.git
    ```
+   git clone https://github.com/irinaponzi/package-tracker.git
+   ```
+   
 2. Install dependencies:
-   ```bash
+   ```
    go mod tidy
    ```
+   
 3. Run the application:
-  ```bash
-  go run main.go
    ```
+   go run main.go
+   ```
+
 4. Access the package tracking features and start managing shipments.
 
 ## Technologies
