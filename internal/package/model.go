@@ -2,6 +2,7 @@ package _package
 
 import (
 	"github.com/google/uuid"
+	tc "github.com/irinaponzi/package-tracker/internal/tracking_code"
 	"time"
 )
 
@@ -25,7 +26,7 @@ const (
 
 type Package struct {
 	ID           uuid.UUID
-	TrackingCode string
+	TrackingCode tc.TrackingCode
 	Status       PackageStatus
 	Size         PackageSize
 	WeightKg     float64

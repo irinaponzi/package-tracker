@@ -1,6 +1,8 @@
 package _package
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 // IPackageRepository is an interface that represents the package repository
 type IPackageRepository interface {
@@ -21,10 +23,11 @@ func NewPackageRepository(db *sql.DB) *PackageRepository {
 
 // FindAll retrieves all packages from the database
 func (r *PackageRepository) FindAll() ([]Package, error) {
-	rows, err := r.db.Query(`
-    	SELECT tracking_code, status, size, weight_kg, destination
+	query := `
+		SELECT tracking_code, status, size, weight_kg, destination
     	FROM packages
-	`)
+	`
+	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
 	}

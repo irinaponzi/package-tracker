@@ -18,7 +18,9 @@ func NewPackageHandler(sv IPackageService) *PackageHandler {
 	}
 }
 
-// GetAll is a method that returns a handler function to get all packages
+// GetAll is a temporary endpoint to retrieve all packages only for testing purposes
+// This approach is not optimal for large-scale systems as it performs a costly query
+// In next iterations this will be replaced by a key-value store to allow querying by ID
 func (h *PackageHandler) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		packages, err := h.sv.FindAll()
@@ -46,34 +48,5 @@ func (h *PackageHandler) GetAll() http.HandlerFunc {
 // Create is a method that returns a handler function to create a new package
 func (h *PackageHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		/*var body CardRequestDTO
-
-		// decode JSON body
-		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			return web.EncodeJSON(w, NewCardResponse(msgFail, msgInvalidJSON), http.StatusBadRequest)
-		}
-
-		// validate struct
-		if validationErrors := ValidateCardRequest(body); validationErrors != nil {
-			return web.EncodeJSON(w, validationErrors, http.StatusBadRequest)
-		}
-
-		// process
-		err := h.sv.Create(body.Amount, body.Bin, body.Range, body.FundingType)
-
-		// error response
-		if err != nil {
-			var stockErr *card.BINAndRangeStockError
-			switch {
-			case errors.As(err, &stockErr):
-				return web.EncodeJSON(w, NewCardResponse(msgFail, err.Error()), http.StatusConflict)
-			default:
-				return web.EncodeJSON(w, NewCardResponse(msgFail, err.Error()), http.StatusInternalServerError)
-			}
-		}
-
-		// success response
-		message := fmt.Sprintf(msgCardsCreated, body.Amount)
-		return web.EncodeJSON(w, NewCardResponse(msgSuccess, message), http.StatusCreated)*/
 	}
 }

@@ -23,7 +23,7 @@ func NewPackageDto(trackingCode string, status PackageStatus, size PackageSize, 
 // MapPackageToDto maps a Package entity to a PackageDto
 func MapPackageToDto(p *Package) *PackageDto {
 	return &PackageDto{
-		TrackingCode: p.TrackingCode,
+		TrackingCode: p.TrackingCode.Code,
 		Status:       p.Status,
 		Size:         p.Size,
 		WeightKg:     p.WeightKg,
