@@ -6,7 +6,7 @@ CREATE DATABASE package_tracker;
 USE package_tracker;
 
 -- Create tables
-CREATE TABLE tracking_codes (
+CREATE TABLE tracking (
                                 id CHAR(36) PRIMARY KEY,
                                 country CHAR(2) NOT NULL,
                                 date DATE NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE packages (
                           destination VARCHAR(255) NOT NULL,
                           created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                           updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                          FOREIGN KEY (tracking_code_id) REFERENCES tracking_codes(id)
+                          FOREIGN KEY (tracking_code_id) REFERENCES tracking(id)
 );
 
 CREATE TABLE batches (
@@ -48,7 +48,7 @@ CREATE TABLE batch_packages (
 );
 
 -- Some insert statements to populate the tables with dummy data
-INSERT INTO tracking_codes (id, country, date, sequence, code) VALUES
+INSERT INTO tracking (id, country, date, sequence, code) VALUES
 ('tracking-uuid-001', 'AR', '2025-04-26', 1, 'AR-20250426-000001'),
 ('tracking-uuid-002', 'BR', '2025-04-26', 2, 'BR-20250426-000002'),
 ('tracking-uuid-003', 'US', '2025-04-26', 3, 'US-20250426-000003'),

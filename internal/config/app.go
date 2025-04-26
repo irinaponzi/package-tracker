@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/irinaponzi/package-tracker/internal/batch"
 	_package "github.com/irinaponzi/package-tracker/internal/package"
+	"github.com/irinaponzi/package-tracker/internal/tracking"
 	"net/http"
 
 	//_ "github.com/irinaponzi/package-tracker/docs"
@@ -27,8 +28,9 @@ type AppConfig struct {
 
 // HandlerContainer is a struct that contains all the handlers
 type HandlerContainer struct {
-	BatchHandler   *batch.BatchHandler
-	PackageHandler *_package.PackageHandler
+	TrackingHandler *tracking.TrackingHandler
+	PackageHandler  *_package.PackageHandler
+	BatchHandler    *batch.BatchHandler
 }
 
 // SetDependencies is a function that sets the app dependencies
@@ -39,18 +41,22 @@ func (app *AppConfig) SetDependencies() {
 		panic(err)
 	}
 	// - repository
+	rpTracking := tracking.NewTrackingRepository(database)
 	rpPackage := _package.NewPackageRepository(database)
 	rpBatch := batch.NewBatchRepository(database)
 	// - service
+	svTracking := tracking.NewTrackingService(rpTracking)
 	svPackage := _package.NewPackageService(rpPackage)
 	svBatch := batch.NewBatchService(rpBatch)
 	// - handler
+	hdTracking := tracking.NewTrackingHandler(svTracking)
 	hdPackage := _package.NewPackageHandler(svPackage)
 	hdBatch := batch.NewBatchHandler(svBatch)
 
 	app.Handlers = &HandlerContainer{
-		BatchHandler:   hdBatch,
-		PackageHandler: hdPackage,
+		TrackingHandler: hdTracking,
+		PackageHandler:  hdPackage,
+		BatchHandler:    hdBatch,
 	}
 }
 
@@ -64,6 +70,10 @@ func (app *AppConfig) SetMappings() {
 
 	// - api routes
 	app.Mux.Route("/api/v1", func(rt chi.Router) {
+		// - tracking
+		rt.Route("/tracking", func(r chi.Router) {
+			r.Post("/", app.Handlers.TrackingHandler.Create())
+		})
 		// - packages
 		rt.Route("/packages", func(r chi.Router) {
 			r.Get("/", app.Handlers.PackageHandler.GetAll())
