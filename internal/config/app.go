@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/irinaponzi/package-tracker/internal/batch"
+	_package "github.com/irinaponzi/package-tracker/internal/package"
 	"net/http"
 
 	//_ "github.com/irinaponzi/package-tracker/docs"
@@ -26,7 +27,8 @@ type AppConfig struct {
 
 // HandlerContainer is a struct that contains all the handlers
 type HandlerContainer struct {
-	BatchHandler *batch.BatchHandler
+	BatchHandler   *batch.BatchHandler
+	PackageHandler *_package.PackageHandler
 }
 
 // SetDependencies is a function that sets the app dependencies
@@ -37,14 +39,18 @@ func (app *AppConfig) SetDependencies() {
 		panic(err)
 	}
 	// - repository
+	rpPackage := _package.NewPackageRepository(database)
 	rpBatch := batch.NewBatchRepository(database)
 	// - service
+	svPackage := _package.NewPackageService(rpPackage)
 	svBatch := batch.NewBatchService(rpBatch)
 	// - handler
+	hdPackage := _package.NewPackageHandler(svPackage)
 	hdBatch := batch.NewBatchHandler(svBatch)
 
 	app.Handlers = &HandlerContainer{
-		BatchHandler: hdBatch,
+		BatchHandler:   hdBatch,
+		PackageHandler: hdPackage,
 	}
 }
 
@@ -58,6 +64,10 @@ func (app *AppConfig) SetMappings() {
 
 	// - api routes
 	app.Mux.Route("/api/v1", func(rt chi.Router) {
+		// - packages
+		rt.Route("/packages", func(r chi.Router) {
+			r.Get("/", app.Handlers.PackageHandler.GetAll())
+		})
 		// - batches
 		rt.Route("/batches", func(r chi.Router) {
 			r.Get("/", app.Handlers.BatchHandler.GetAll())
@@ -65,6 +75,7 @@ func (app *AppConfig) SetMappings() {
 	})
 
 	// - swagger
+	// todo: it is not configured yet
 	app.Mux.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
 	))

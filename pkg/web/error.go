@@ -2,7 +2,19 @@ package web
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+)
+
+// todo refactor this file and create a better error handling
+// todo: all the web package must be improved
+
+var (
+	ErrNotFound      = errors.New("not found")       // 404
+	ErrInternal      = errors.New("internal error")  // 500
+	ErrBadRequest    = errors.New("invalid request") // 400
+	ErrFieldNotFound = errors.New("field not found") // 422
+	ErrConflict      = errors.New("conflict")        // 409
 )
 
 type errorResponse struct {
