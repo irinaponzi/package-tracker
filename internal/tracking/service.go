@@ -1,7 +1,6 @@
 package tracking
 
 import (
-	"fmt"
 	"github.com/irinaponzi/package-tracker/internal/country_codes"
 	"time"
 )
@@ -26,34 +25,32 @@ func NewTrackingService(rp ITrackingRepository) *TrackingService {
 // Create creates a new tracking code
 func (s *TrackingService) Create(amount int, country string) error {
 	var trackingCodes []Tracking
-	date := time.Now()
-	// todo: send date formated
+	date := time.Now().UTC().Truncate(24 * time.Hour)
 
-	// country code // todo: refactor this
+	// country code
 	countryCode, err := country_codes.GetCountryCode(country)
 	if err != nil {
-		return fmt.Errorf("invalid country code: %w", err)
+		return err
 	}
 
 	// get the last number for sequential numbers generation
-	lastNumber, err := s.rp.GetLastSequence(country, date)
+	lastNumber, err := s.rp.GetLastSequence(*countryCode, date)
 	if err != nil {
-		return fmt.Errorf("get last number: %w", err)
+		return err
 	}
 
 	// generate sequential numbers
 	sequences := s.GenerateSequentialNumbers(lastNumber, amount)
-	// generate tracking code
 
 	// create tracking codes
 	for _, seq := range sequences {
-		newTrackingCode := NewTracking(*countryCode, seq)
+		newTrackingCode := NewTracking(*countryCode, date, seq)
 		trackingCodes = append(trackingCodes, *newTrackingCode)
 	}
 
 	err = s.rp.SaveTrackingCode(trackingCodes)
 	if err != nil {
-		return fmt.Errorf("save tracking codes: %w", err)
+		return err
 	}
 	return nil
 }

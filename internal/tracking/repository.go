@@ -14,7 +14,7 @@ const (
 
 // ITrackingRepository is an interface that represents the tracking code repository
 type ITrackingRepository interface {
-	GetLastSequence(country string, date time.Time) (int, error)
+	GetLastSequence(countryCode string, date time.Time) (int, error)
 	SaveTrackingCode(tks []Tracking) error
 }
 

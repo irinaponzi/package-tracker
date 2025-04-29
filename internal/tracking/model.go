@@ -25,8 +25,7 @@ type Tracking struct {
 	UpdatedAt   time.Time
 }
 
-func NewTracking(countryCode string, sequence int) *Tracking {
-	date := time.Now()
+func NewTracking(countryCode string, date time.Time, sequence int) *Tracking {
 	return &Tracking{
 		ID:          uuid.New(),
 		CountryCode: countryCode,

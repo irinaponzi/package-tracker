@@ -7,14 +7,14 @@ USE package_tracker;
 
 -- Create tables
 CREATE TABLE tracking (
-                                id CHAR(36) PRIMARY KEY,
-                                country CHAR(2) NOT NULL,
-                                date DATE NOT NULL,
-                                sequence INT NOT NULL,
-                                code VARCHAR(50) NOT NULL UNIQUE,
-                                status ENUM('generated', 'assigned', 'cancelled') NOT NULL DEFAULT 'generated',
-                                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                          id CHAR(36) PRIMARY KEY,
+                          country CHAR(2) NOT NULL,
+                          date DATE NOT NULL,
+                          sequence INT NOT NULL,
+                          code VARCHAR(50) NOT NULL UNIQUE,
+                          status ENUM('generated', 'assigned', 'cancelled') NOT NULL DEFAULT 'generated',
+                          created_at TIMESTAMP NOT NULL DEFAULT (UTC_TIMESTAMP),
+                          updated_at TIMESTAMP NOT NULL DEFAULT (UTC_TIMESTAMP) ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE packages (
@@ -24,8 +24,8 @@ CREATE TABLE packages (
                           size ENUM('small', 'medium', 'large') NOT NULL,
                           weight_kg DECIMAL(6,2) NOT NULL,
                           destination VARCHAR(255) NOT NULL,
-                          created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                          updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                          created_at TIMESTAMP NOT NULL DEFAULT (UTC_TIMESTAMP),
+                          updated_at TIMESTAMP NOT NULL DEFAULT (UTC_TIMESTAMP) ON UPDATE CURRENT_TIMESTAMP,
                           FOREIGN KEY (tracking_code_id) REFERENCES tracking(id)
 );
 
@@ -35,7 +35,7 @@ CREATE TABLE batches (
                          transport_company VARCHAR(255) NULL,
                          status ENUM('created', 'done', 'fail') NOT NULL DEFAULT 'created',
                          error_details VARCHAR(255),
-                         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                         created_at TIMESTAMP NOT NULL DEFAULT (UTC_TIMESTAMP)
 );
 
 CREATE TABLE batch_packages (
