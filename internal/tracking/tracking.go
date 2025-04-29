@@ -41,7 +41,7 @@ func (h *TrackingHandler) Create() http.HandlerFunc {
 		}
 
 		// success response
-		message := fmt.Sprintf(msgCardsCreated, body.Amount)
+		message := fmt.Sprintf(msgCreated, body.Amount)
 		web.JSON(w, http.StatusCreated, NewTrackingResponse(msgSuccess, message))
 		return
 	}

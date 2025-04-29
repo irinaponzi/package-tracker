@@ -1,9 +1,9 @@
 package tracking
 
 const (
-	msgSuccess      = "success"
-	msgFail         = "fail"
-	msgCardsCreated = "%d cards has been created successfully"
+	msgSuccess = "success"
+	msgFail    = "fail"
+	msgCreated = "%d tracking codes has been created successfully"
 )
 
 type TrackingResponse struct {
