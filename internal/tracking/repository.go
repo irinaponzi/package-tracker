@@ -14,6 +14,7 @@ const (
 
 // ITrackingRepository is an interface that represents the tracking code repository
 type ITrackingRepository interface {
+	CountByDateAndCountry(countryCode string, date time.Time) (int, error)
 	GetLastSequence(countryCode string, date time.Time) (int, error)
 	SaveTrackingCode(tks []Tracking) error
 }
@@ -30,7 +31,24 @@ func NewTrackingRepository(db *sql.DB) *TrackingRepository {
 	}
 }
 
+// CountByDateAndCountry counts the number of tracking codes for a given country and date
+// It is used to check if there are enough tracking codes available for a given country and date
+func (r *TrackingRepository) CountByDateAndCountry(countryCode string, date time.Time) (int, error) {
+	var count int
+	query := `
+		SELECT COUNT(*) 
+		FROM tracking 
+		WHERE country = ? AND date = ?
+	`
+	err := r.db.QueryRow(query, countryCode, date).Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("sql: error counting tracking codes: %w", err)
+	}
+	return count, nil
+}
+
 // GetLastSequence retrieves the last sequence number for a given country and date
+// It is used to generate new tracking codes sequentially by country and date
 func (r *TrackingRepository) GetLastSequence(countryCode string, date time.Time) (int, error) {
 	var last sql.NullInt64
 	query := `

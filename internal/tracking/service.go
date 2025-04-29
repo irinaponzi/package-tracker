@@ -1,8 +1,15 @@
 package tracking
 
 import (
+	"fmt"
 	"github.com/irinaponzi/package-tracker/internal/country_codes"
 	"time"
+)
+
+// maxTrackingCodesPerDayByCountry is a constant that defines the maximum number
+// of tracking codes that can be generated per day for each country
+const (
+	maxTrackingCodesPerDayByCountry = 1_000_000
 )
 
 // ITrackingService is an interface that represents the tracking code service
@@ -33,6 +40,18 @@ func (s *TrackingService) Create(amount int, country string) error {
 		return err
 	}
 
+	// check stock for the given country and date
+	count, err := s.rp.CountByDateAndCountry(*countryCode, date)
+	if err != nil {
+		return err
+	}
+	available := maxTrackingCodesPerDayByCountry - count
+	if available < amount {
+		// todo create a custom error for this
+		return fmt.Errorf("not enough tracking codes available for %s on %s: requested %d, available %d",
+			country, date.Format("2006-01-02"), amount, available)
+	}
+
 	// get the last number for sequential numbers generation
 	lastNumber, err := s.rp.GetLastSequence(*countryCode, date)
 	if err != nil {
@@ -40,7 +59,7 @@ func (s *TrackingService) Create(amount int, country string) error {
 	}
 
 	// generate sequential numbers
-	sequences := s.GenerateSequentialNumbers(lastNumber, amount)
+	sequences := s.generateSequentialNumbers(lastNumber, amount)
 
 	// create tracking codes
 	for _, seq := range sequences {
@@ -56,7 +75,7 @@ func (s *TrackingService) Create(amount int, country string) error {
 }
 
 // GenerateSequentialNumbers generates a slice of sequential numbers
-func (s *TrackingService) GenerateSequentialNumbers(lastNumber int, amount int) []int {
+func (s *TrackingService) generateSequentialNumbers(lastNumber int, amount int) []int {
 	numbers := make([]int, amount)
 
 	if lastNumber != 0 {

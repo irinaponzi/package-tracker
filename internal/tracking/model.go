@@ -25,6 +25,7 @@ type Tracking struct {
 	UpdatedAt   time.Time
 }
 
+// NewTracking creates a new Tracking instance
 func NewTracking(countryCode string, date time.Time, sequence int) *Tracking {
 	return &Tracking{
 		ID:          uuid.New(),
@@ -35,6 +36,7 @@ func NewTracking(countryCode string, date time.Time, sequence int) *Tracking {
 	}
 }
 
+// generateTrackingCode generates a tracking code based on the country code, date, and sequence number
 func generateTrackingCode(countryCode string, date time.Time, sequence int) string {
 	dateStr := date.Format("20060102")
 	code := fmt.Sprintf("%s-%s-%06d", countryCode, dateStr, sequence)
