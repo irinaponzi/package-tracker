@@ -6,6 +6,12 @@ import (
 	"time"
 )
 
+// maxTrackingCodesPerDayByCountry is a constant that defines the maximum number
+// of tracking codes that can be generated per day for each country
+const (
+	maxTrackingCodesPerDayByCountry = 1_000_000
+)
+
 // ITrackingService is an interface that represents the tracking code service
 type ITrackingService interface {
 	Create(amount int, country string) error
@@ -26,40 +32,50 @@ func NewTrackingService(rp ITrackingRepository) *TrackingService {
 // Create creates a new tracking code
 func (s *TrackingService) Create(amount int, country string) error {
 	var trackingCodes []Tracking
-	date := time.Now()
-	// todo: send date formated
+	date := time.Now().UTC().Truncate(24 * time.Hour)
 
-	// country code // todo: refactor this
+	// country code
 	countryCode, err := country_codes.GetCountryCode(country)
 	if err != nil {
-		return fmt.Errorf("invalid country code: %w", err)
+		return err
+	}
+
+	// check stock for the given country and date
+	count, err := s.rp.CountByDateAndCountry(*countryCode, date)
+	if err != nil {
+		return err
+	}
+	available := maxTrackingCodesPerDayByCountry - count
+	if available < amount {
+		// todo create a custom error for this
+		return fmt.Errorf("not enough tracking codes available for %s on %s: requested %d, available %d",
+			country, date.Format("2006-01-02"), amount, available)
 	}
 
 	// get the last number for sequential numbers generation
-	lastNumber, err := s.rp.GetLastSequence(country, date)
+	lastNumber, err := s.rp.GetLastSequence(*countryCode, date)
 	if err != nil {
-		return fmt.Errorf("get last number: %w", err)
+		return err
 	}
 
 	// generate sequential numbers
-	sequences := s.GenerateSequentialNumbers(lastNumber, amount)
-	// generate tracking code
+	sequences := s.generateSequentialNumbers(lastNumber, amount)
 
 	// create tracking codes
 	for _, seq := range sequences {
-		newTrackingCode := NewTracking(*countryCode, seq)
+		newTrackingCode := NewTracking(*countryCode, date, seq)
 		trackingCodes = append(trackingCodes, *newTrackingCode)
 	}
 
 	err = s.rp.SaveTrackingCode(trackingCodes)
 	if err != nil {
-		return fmt.Errorf("save tracking codes: %w", err)
+		return err
 	}
 	return nil
 }
 
 // GenerateSequentialNumbers generates a slice of sequential numbers
-func (s *TrackingService) GenerateSequentialNumbers(lastNumber int, amount int) []int {
+func (s *TrackingService) generateSequentialNumbers(lastNumber int, amount int) []int {
 	numbers := make([]int, amount)
 
 	if lastNumber != 0 {
