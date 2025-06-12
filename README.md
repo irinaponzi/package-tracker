@@ -1,6 +1,8 @@
 # Package Tracker
 
-**Package Tracker** is a backend simulation system for managing package shipments in batches. It allows tracking the state of packages (`created`, `in_transit`, `delivered`, etc.), generating custom tracking codes, and handling batch operations with multi-database storage. This system is designed to help with learning Go architecture and transactional flows.
+**Package Tracker** is a backend simulation system for managing package shipments in batches. It allows tracking the state of packages (`created`, `in_transit`, `delivered`, etc.), generating custom tracking codes, and handling batch operations with multi-database storage. 
+
+The system is designed to practice *Domain-Driven Design* (DDD) principles and to apply concepts from *Designing Data-Intensive Applications* by Martin Kleppmann.
 
 ## Features
 
@@ -33,8 +35,8 @@ To get started with the project:
 ## Technologies
 
 - **Go**: Main language used for backend logic.
-- **MySQL / PostgreSQL**: Relational databases for managing batch and package data.
-- **Redis / Memcached**: For caching package status and fast access to frequently updated data.
+- **MySQL**: Relational databases for managing batch and package data.
+- **Redis**: For caching package status and fast access to frequently updated data.
 
 ## License
 
